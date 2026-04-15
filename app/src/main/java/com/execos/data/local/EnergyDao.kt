@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EnergyDao {
-    @Query("SELECT * FROM energy ORDER BY date DESC LIMIT :limit")
-    fun observeRecent(limit: Int): Flow<List<EnergyEntity>>
+    @Query("SELECT * FROM energy WHERE userId = :userId ORDER BY date DESC LIMIT :limit")
+    fun observeRecent(userId: String, limit: Int): Flow<List<EnergyEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: EnergyEntity)

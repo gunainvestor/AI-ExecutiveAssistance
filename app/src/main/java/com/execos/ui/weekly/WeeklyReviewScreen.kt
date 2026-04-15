@@ -138,7 +138,13 @@ fun WeeklyReviewScreen(
                         minLines = 2,
                         maxLines = 8,
                     )
-                    Spacer(Modifier.height(20.dp))
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        "Summary uses journal context (RAG) and the same tools as Decision AI—recent decisions, today’s priorities, and reflections—when the model needs more detail.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Spacer(Modifier.height(16.dp))
                     Button(
                         onClick = { viewModel.runAiSummary() },
                         enabled = !state.aiBusy,

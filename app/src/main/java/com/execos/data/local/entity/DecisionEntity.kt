@@ -6,10 +6,11 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "decisions",
-    indices = [Index(value = ["date"])],
+    indices = [Index(value = ["userId", "date"])],
 )
 data class DecisionEntity(
     @PrimaryKey val id: String,
+    val userId: String,
     val title: String,
     val context: String,
     val options: String,

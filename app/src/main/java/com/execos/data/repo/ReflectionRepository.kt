@@ -17,11 +17,11 @@ class ReflectionRepository @Inject constructor(
     private val dao get() = db.reflectionDao()
 
     fun observeRecent(uid: String, limit: Long = 30): Flow<List<ReflectionItem>> =
-        dao.observeRecent(limit.coerceAtMost(Int.MAX_VALUE.toLong()).toInt())
+        dao.observeRecent(uid, limit.coerceAtMost(Int.MAX_VALUE.toLong()).toInt())
             .map { list -> list.map { it.toItem() } }
 
     suspend fun saveReflection(uid: String, item: ReflectionItem) {
         val id = item.id.ifBlank { UUID.randomUUID().toString() }
-        dao.upsert(item.copy(id = id).toEntity())
+        dao.upsert(item.copy(id = id).toEntity(userId = uid, id = id))
     }
 }

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -101,19 +102,30 @@ class ReflectionViewModel @Inject constructor(
         }
         viewModelScope.launch {
             busy.value = true
-            val result = aiService.reflectionInsights(text)
-            busy.value = false
-            result.fold(
-                onSuccess = { aiOut.value = it },
-                onFailure = { flash.value = it.message ?: "AI failed" },
-            )
+            aiOut.value = ""
+            try {
+                aiService.reflectionInsightsStream(text)
+                    .catch { e ->
+                        flash.value = e.message ?: "AI failed"
+                    }
+                    .collect { chunk ->
+                        aiOut.value += chunk
+                    }
+            } finally {
+                busy.value = false
+            }
         }
     }
 
     fun save() {
-        val u = uid.value ?: return
+        val u = uid.value
+        if (u == null) {
+            flash.value = "Not signed in."
+            return
+        }
         val text = input.value.trim()
-        if (text.isBlank()) {
+        val ai = aiOut.value.trim()
+        if (text.isBlank() && ai.isBlank()) {
             flash.value = "Nothing to save."
             return
         }
@@ -123,7 +135,7 @@ class ReflectionViewModel @Inject constructor(
                     u,
                     ReflectionItem(
                         textInput = text,
-                        aiOutput = aiOut.value,
+                        aiOutput = ai,
                         date = Dates.todayIso(),
                     ),
                 )

@@ -6,10 +6,11 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "tasks",
-    indices = [Index(value = ["date"])],
+    indices = [Index(value = ["userId", "date"])],
 )
 data class TaskEntity(
     @PrimaryKey val id: String,
+    val userId: String,
     val title: String,
     val impactScore: Int,
     val notes: String,

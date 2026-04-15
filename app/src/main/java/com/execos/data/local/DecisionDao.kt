@@ -9,14 +9,17 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DecisionDao {
-    @Query("SELECT * FROM decisions ORDER BY date DESC LIMIT 200")
-    fun observeAll(): Flow<List<DecisionEntity>>
+    @Query("SELECT * FROM decisions WHERE userId = :userId ORDER BY date DESC LIMIT 200")
+    fun observeAll(userId: String): Flow<List<DecisionEntity>>
 
     @Query(
-        "SELECT * FROM decisions WHERE date >= :start AND date <= :end ORDER BY date DESC",
+        "SELECT * FROM decisions WHERE userId = :userId AND date >= :start AND date <= :end ORDER BY date DESC",
     )
-    fun observeBetween(start: String, end: String): Flow<List<DecisionEntity>>
+    fun observeBetween(userId: String, start: String, end: String): Flow<List<DecisionEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: DecisionEntity)
+
+    @Query("SELECT * FROM decisions WHERE userId = :userId ORDER BY date DESC LIMIT :limit")
+    suspend fun getRecentSnapshot(userId: String, limit: Int): List<DecisionEntity>
 }

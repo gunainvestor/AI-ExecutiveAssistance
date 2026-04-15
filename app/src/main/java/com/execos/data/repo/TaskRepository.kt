@@ -17,14 +17,14 @@ class TaskRepository @Inject constructor(
     private val dao get() = db.taskDao()
 
     fun observeTasksForDate(uid: String, date: String): Flow<List<TaskItem>> =
-        dao.observeByDate(date).map { list -> list.map { it.toItem() } }
+        dao.observeByDate(uid, date).map { list -> list.map { it.toItem() } }
 
     fun observeTasksInRange(uid: String, start: String, end: String): Flow<List<TaskItem>> =
-        dao.observeBetween(start, end).map { list -> list.map { it.toItem() } }
+        dao.observeBetween(uid, start, end).map { list -> list.map { it.toItem() } }
 
     suspend fun saveTask(uid: String, task: TaskItem) {
         val id = task.id.ifBlank { UUID.randomUUID().toString() }
-        dao.upsert(task.copy(id = id).toEntity())
+        dao.upsert(task.copy(id = id).toEntity(userId = uid, id = id))
     }
 
     suspend fun deleteTask(uid: String, taskId: String) {

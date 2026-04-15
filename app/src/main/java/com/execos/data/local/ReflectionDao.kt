@@ -9,9 +9,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ReflectionDao {
-    @Query("SELECT * FROM reflections ORDER BY date DESC LIMIT :limit")
-    fun observeRecent(limit: Int): Flow<List<ReflectionEntity>>
+    @Query("SELECT * FROM reflections WHERE userId = :userId ORDER BY date DESC LIMIT :limit")
+    fun observeRecent(userId: String, limit: Int): Flow<List<ReflectionEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: ReflectionEntity)
+
+    @Query("SELECT * FROM reflections WHERE userId = :userId ORDER BY date DESC LIMIT :limit")
+    suspend fun getRecentSnapshot(userId: String, limit: Int): List<ReflectionEntity>
 }

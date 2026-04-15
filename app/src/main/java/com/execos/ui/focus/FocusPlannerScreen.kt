@@ -31,9 +31,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +46,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.execos.data.model.TaskItem
 import com.execos.ui.components.ExecOutlinedTextField
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -169,6 +176,37 @@ private fun TaskEditorCard(
     onToggle: () -> Unit,
     onDelete: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+    var titleDraft by remember(task.id) { mutableStateOf(task.title) }
+    var notesDraft by remember(task.id) { mutableStateOf(task.notes) }
+    var pendingSave by remember(task.id) { mutableStateOf<Job?>(null) }
+
+    // Keep local drafts aligned when task changes from outside this editor.
+    LaunchedEffect(task.title) {
+        if (task.title != titleDraft) titleDraft = task.title
+    }
+    LaunchedEffect(task.notes) {
+        if (task.notes != notesDraft) notesDraft = task.notes
+    }
+
+    fun scheduleSave(updated: TaskItem) {
+        pendingSave?.cancel()
+        pendingSave = scope.launch {
+            delay(220)
+            onChange(updated)
+        }
+    }
+
+    DisposableEffect(task.id) {
+        onDispose {
+            pendingSave?.cancel()
+            // Flush latest drafts when leaving composition.
+            if (titleDraft != task.title || notesDraft != task.notes) {
+                onChange(task.copy(title = titleDraft, notes = notesDraft))
+            }
+        }
+    }
+
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
@@ -190,8 +228,11 @@ private fun TaskEditorCard(
             }
             Spacer(Modifier.height(8.dp))
             ExecOutlinedTextField(
-                value = task.title,
-                onValueChange = { onChange(task.copy(title = it)) },
+                value = titleDraft,
+                onValueChange = {
+                    titleDraft = it
+                    scheduleSave(task.copy(title = it, notes = notesDraft))
+                },
                 label = { Text("Priority title") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
@@ -213,8 +254,11 @@ private fun TaskEditorCard(
                 ),
             )
             ExecOutlinedTextField(
-                value = task.notes,
-                onValueChange = { onChange(task.copy(notes = it)) },
+                value = notesDraft,
+                onValueChange = {
+                    notesDraft = it
+                    scheduleSave(task.copy(title = titleDraft, notes = it))
+                },
                 label = { Text("Notes (optional)") },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 2,

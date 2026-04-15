@@ -7,4 +7,5 @@ object Routes {
     const val Reflection = "reflection"
     const val Weekly = "weekly"
     const val Energy = "energy"
+    const val Account = "account"
 }

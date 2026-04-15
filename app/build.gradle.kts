@@ -27,6 +27,24 @@ android {
             "OPENAI_API_KEY",
             "\"${localProps.getProperty("OPENAI_API_KEY", "")}\""
         )
+        buildConfigField(
+            "String",
+            "STRAVA_CLIENT_ID",
+            "\"${localProps.getProperty("STRAVA_CLIENT_ID", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "STRAVA_CLIENT_SECRET",
+            "\"${localProps.getProperty("STRAVA_CLIENT_SECRET", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "STRAVA_REDIRECT_URI",
+            "\"${localProps.getProperty("STRAVA_REDIRECT_URI", "execos://oauth/strava")}\""
+        )
+
+        // AppAuth requires a manifest placeholder for redirect scheme.
+        manifestPlaceholders["appAuthRedirectScheme"] = "execos"
     }
 
     buildTypes {
@@ -83,5 +101,8 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.appauth)
+    implementation(libs.androidx.security.crypto)
     debugImplementation(libs.androidx.ui.tooling)
 }

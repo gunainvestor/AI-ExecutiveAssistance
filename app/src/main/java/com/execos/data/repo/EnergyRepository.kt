@@ -16,11 +16,11 @@ class EnergyRepository @Inject constructor(
     private val dao get() = db.energyDao()
 
     fun observeRecent(uid: String, limit: Long = 60): Flow<List<EnergyEntry>> =
-        dao.observeRecent(limit.coerceAtMost(Int.MAX_VALUE.toLong()).toInt())
+        dao.observeRecent(uid, limit.coerceAtMost(Int.MAX_VALUE.toLong()).toInt())
             .map { list -> list.map { it.toEntry() } }
 
     suspend fun saveEnergy(uid: String, entry: EnergyEntry) {
-        val id = entry.date.replace("-", "")
-        dao.upsert(entry.toEntity(id))
+        val id = "${uid}_${entry.date.replace("-", "")}"
+        dao.upsert(entry.toEntity(userId = uid, id = id))
     }
 }

@@ -16,10 +16,10 @@ class WeeklyReviewRepository @Inject constructor(
     private val dao get() = db.weeklyReviewDao()
 
     fun observeReviews(uid: String): Flow<List<WeeklyReviewItem>> =
-        dao.observeAll().map { list -> list.map { it.toItem() } }
+        dao.observeAll(uid).map { list -> list.map { it.toItem() } }
 
     suspend fun saveReview(uid: String, item: WeeklyReviewItem) {
-        val id = item.id.ifBlank { item.weekStart }
-        dao.upsert(item.toEntity(id))
+        val id = item.id.ifBlank { "${uid}_${item.weekStart}" }
+        dao.upsert(item.toEntity(userId = uid, id = id))
     }
 }

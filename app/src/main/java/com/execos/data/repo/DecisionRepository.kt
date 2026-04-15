@@ -17,13 +17,13 @@ class DecisionRepository @Inject constructor(
     private val dao get() = db.decisionDao()
 
     fun observeDecisions(uid: String): Flow<List<DecisionItem>> =
-        dao.observeAll().map { list -> list.map { it.toItem() } }
+        dao.observeAll(uid).map { list -> list.map { it.toItem() } }
 
     fun observeDecisionsInRange(uid: String, start: String, end: String): Flow<List<DecisionItem>> =
-        dao.observeBetween(start, end).map { list -> list.map { it.toItem() } }
+        dao.observeBetween(uid, start, end).map { list -> list.map { it.toItem() } }
 
     suspend fun saveDecision(uid: String, item: DecisionItem) {
         val id = item.id.ifBlank { UUID.randomUUID().toString() }
-        dao.upsert(item.copy(id = id).toEntity())
+        dao.upsert(item.copy(id = id).toEntity(userId = uid, id = id))
     }
 }

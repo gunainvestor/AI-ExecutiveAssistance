@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WeeklyReviewDao {
-    @Query("SELECT * FROM weekly_reviews ORDER BY weekStart DESC LIMIT 52")
-    fun observeAll(): Flow<List<WeeklyReviewEntity>>
+    @Query("SELECT * FROM weekly_reviews WHERE userId = :userId ORDER BY weekStart DESC LIMIT 52")
+    fun observeAll(userId: String): Flow<List<WeeklyReviewEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: WeeklyReviewEntity)

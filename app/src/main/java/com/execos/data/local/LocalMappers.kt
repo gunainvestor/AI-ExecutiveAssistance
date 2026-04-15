@@ -20,8 +20,9 @@ fun TaskEntity.toItem() = TaskItem(
     date = date,
 )
 
-fun TaskItem.toEntity() = TaskEntity(
+fun TaskItem.toEntity(userId: String, id: String = this.id) = TaskEntity(
     id = id,
+    userId = userId,
     title = title,
     impactScore = impactScore.coerceIn(1, 5),
     notes = notes,
@@ -40,8 +41,9 @@ fun DecisionEntity.toItem() = DecisionItem(
     aiAnalysis = aiAnalysis,
 )
 
-fun DecisionItem.toEntity() = DecisionEntity(
+fun DecisionItem.toEntity(userId: String, id: String = this.id) = DecisionEntity(
     id = id,
+    userId = userId,
     title = title,
     context = context,
     options = options,
@@ -58,8 +60,9 @@ fun ReflectionEntity.toItem() = ReflectionItem(
     date = date,
 )
 
-fun ReflectionItem.toEntity() = ReflectionEntity(
+fun ReflectionItem.toEntity(userId: String, id: String = this.id) = ReflectionEntity(
     id = id,
+    userId = userId,
     textInput = textInput,
     aiOutput = aiOutput,
     date = date,
@@ -72,8 +75,9 @@ fun EnergyEntity.toEntry() = EnergyEntry(
     date = date,
 )
 
-fun EnergyEntry.toEntity(id: String) = EnergyEntity(
+fun EnergyEntry.toEntity(userId: String, id: String) = EnergyEntity(
     id = id,
+    userId = userId,
     morningScore = morningScore.coerceIn(1, 5),
     eveningScore = eveningScore.coerceIn(1, 5),
     date = date,
@@ -88,8 +92,9 @@ fun WeeklyReviewEntity.toItem() = WeeklyReviewItem(
     aiSummary = aiSummary,
 )
 
-fun WeeklyReviewItem.toEntity(id: String) = WeeklyReviewEntity(
+fun WeeklyReviewItem.toEntity(userId: String, id: String) = WeeklyReviewEntity(
     id = id,
+    userId = userId,
     weekStart = weekStart,
     wins = wins,
     mistakes = mistakes,

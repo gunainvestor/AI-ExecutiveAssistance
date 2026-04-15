@@ -105,6 +105,12 @@ fun ReflectionScreen(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        "Insights stream in live as they are generated (journal context is included automatically).",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
                     Spacer(Modifier.height(12.dp))
                     ExecOutlinedTextField(
                         value = state.input,
@@ -132,13 +138,13 @@ fun ReflectionScreen(
                                 strokeWidth = 2.dp,
                             )
                         } else {
-                            Text("Generate AI insights")
+                            Text("Generate insights (streaming)")
                         }
                     }
                     Spacer(Modifier.height(8.dp))
                     OutlinedButton(
                         onClick = { viewModel.save() },
-                        enabled = !state.busy,
+                        enabled = state.input.isNotBlank() || state.aiOutput.isNotBlank(),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text("Save to journal")

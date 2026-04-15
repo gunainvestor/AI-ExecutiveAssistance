@@ -2,6 +2,7 @@ package com.execos.di
 
 import com.execos.BuildConfig
 import com.execos.data.remote.OpenAiApi
+import com.execos.data.strava.StravaApi
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -60,4 +61,14 @@ object NetworkModule {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(OpenAiApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideStravaApi(okHttpClient: OkHttpClient, gson: Gson): StravaApi =
+        Retrofit.Builder()
+            .baseUrl("https://www.strava.com/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+            .create(StravaApi::class.java)
 }

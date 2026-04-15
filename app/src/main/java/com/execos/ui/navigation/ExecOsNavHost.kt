@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.execos.ui.account.AccountScreen
 import com.execos.ui.decisions.DecisionLogScreen
 import com.execos.ui.energy.EnergyTrackerScreen
 import com.execos.ui.focus.FocusPlannerScreen
@@ -79,6 +80,9 @@ fun ExecOsNavHost() {
             }
             composable(Routes.Energy) {
                 EnergyTrackerScreen(onBack = { navController.popBackStack() })
+            }
+            composable(Routes.Account) {
+                AccountScreen(onBack = { navController.popBackStack() })
             }
         }
     }
