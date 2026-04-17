@@ -27,3 +27,29 @@ After a minute or two, GitHub will show your Pages URL on that same screen.
 
 Open `docs/index.html` in a browser.
 
+## Waitlist (serverless endpoint)
+
+The landing page waitlist modal can POST emails to a simple serverless endpoint.
+
+This repo includes a Cloudflare Worker example at `serverless/waitlist-worker/` that stores signups in **Cloudflare KV**.
+
+### Deploy (Cloudflare Worker)
+
+1. Create a Cloudflare account and install Wrangler locally.
+2. Create a KV namespace (example name: `execos_waitlist`).
+3. Update `serverless/waitlist-worker/wrangler.toml` with your KV namespace id.
+4. Deploy:
+
+```bash
+cd serverless/waitlist-worker
+npm install
+npm run deploy
+```
+
+5. Copy your deployed endpoint URL and set it in `docs/index.html`:
+
+```js
+window.__WAITLIST_ENDPOINT__ = "https://YOUR_WORKER_SUBDOMAIN.workers.dev/waitlist";
+```
+
+

@@ -396,7 +396,8 @@
           </label>
 
           <p class="tiny muted">
-            This is a demo landing page; the form stores nothing by default. You can wire it to your email provider later.
+            By default this sends your email to our waitlist endpoint. (You can self-host it with the included serverless
+            example.)
           </p>
         </div>
 
@@ -409,6 +410,11 @@
 
     <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
+    <script>
+      // Set this to your deployed serverless endpoint (e.g. Cloudflare Worker).
+      // Example: https://your-worker.your-subdomain.workers.dev/waitlist
+      window.__WAITLIST_ENDPOINT__ = "https://REPLACE-ME.workers.dev/waitlist";
+    </script>
     <script src="./script.js"></script>
   </body>
 </html>

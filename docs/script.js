@@ -31,6 +31,9 @@ function initModal() {
   const modal = $("#accessModal");
   if (!modal) return;
 
+  const form = $(".modalInner", modal);
+  const submitBtn = $("#fakeSubmit");
+
   function open() {
     if (typeof modal.showModal === "function") {
       modal.showModal();
@@ -41,12 +44,68 @@ function initModal() {
 
   $$("[data-open-modal]").forEach((btn) => btn.addEventListener("click", open));
 
-  const fakeSubmit = $("#fakeSubmit");
-  if (fakeSubmit) {
-    fakeSubmit.addEventListener("click", (e) => {
-      e.preventDefault();
+  async function submitWaitlist() {
+    const endpoint = window.__WAITLIST_ENDPOINT__;
+    if (!endpoint || String(endpoint).includes("REPLACE-ME")) {
+      toast("Waitlist endpoint not configured yet.");
+      return;
+    }
+
+    const emailInput = $("input[name='email']", modal);
+    const nameInput = $("input[name='name']", modal);
+    const goalSelect = $("select[name='goal']", modal);
+
+    const email = emailInput?.value?.trim() ?? "";
+    const name = nameInput?.value?.trim() ?? "";
+    const goal = goalSelect?.value?.trim() ?? "";
+
+    if (!email || !email.includes("@")) {
+      toast("Please enter a valid email.");
+      return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Joining…";
+    }
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          name,
+          goal,
+          source: "landing_page",
+          userAgent: navigator.userAgent,
+          page: location.href,
+        }),
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || `HTTP ${res.status}`);
+      }
+
       modal.close();
       toast("You’re on the list. We’ll email you soon.");
+      form?.reset?.();
+    } catch (err) {
+      toast("Couldn’t join right now. Please try again.");
+      console.error(err);
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Join waitlist";
+      }
+    }
+  }
+
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      submitWaitlist();
     });
   }
 }

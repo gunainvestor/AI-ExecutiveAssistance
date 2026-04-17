@@ -1,0 +1,12 @@
+name = "execos-waitlist"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+
+kv_namespaces = [
+  { binding = "WAITLIST", id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID" }
+]
+
+# Optional: allow your GitHub Pages domain explicitly.
+# [vars]
+# ALLOWED_ORIGIN = "https://gunainvestor.github.io"
+
