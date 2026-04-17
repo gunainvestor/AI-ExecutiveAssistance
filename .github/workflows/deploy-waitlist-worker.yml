@@ -1,0 +1,42 @@
+name: Deploy waitlist Worker
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "serverless/waitlist-worker/**"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: serverless/waitlist-worker
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: serverless/waitlist-worker/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy Worker (Wrangler)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WAITLIST_KV_NAMESPACE_ID: ${{ secrets.WAITLIST_KV_NAMESPACE_ID }}
+        run: |
+          # Replace KV id placeholder at deploy time (no secrets committed)
+          sed -i.bak "s/REPLACE_WITH_YOUR_KV_NAMESPACE_ID/${WAITLIST_KV_NAMESPACE_ID}/g" wrangler.toml
+          npm run deploy
+
