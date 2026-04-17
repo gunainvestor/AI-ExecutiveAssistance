@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="ExecOS — a focused operating system for your goals. Plan your week, protect deep work, and review progress."
+    />
+    <title>ExecOS — turn goals into weekly execution</title>
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="top">
+      <nav class="nav">
+        <a class="brand" href="#">
+          <span class="brandMark" aria-hidden="true"></span>
+          <span class="brandName">ExecOS</span>
+        </a>
+        <div class="navLinks" role="navigation" aria-label="Primary">
+          <a href="#problem">Problem</a>
+          <a href="#users">Users</a>
+          <a href="#solution">Solution</a>
+          <a href="#outcomes">Outcomes</a>
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div class="navCtas">
+          <button class="ghost" type="button" data-scroll="#pricing">See pricing</button>
+          <button class="primary" type="button" data-open-modal>Request access</button>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div class="container heroGrid">
+          <div class="heroCopy">
+            <p class="eyebrow">For builders, operators, and ambitious humans</p>
+            <h1>Turn goals into weekly execution—without burning out.</h1>
+            <p class="subhead">
+              ExecOS helps you plan what matters, protect focus time, and review progress with a lightweight system that
+              actually sticks.
+            </p>
+            <div class="heroCtas">
+              <button class="primary" type="button" data-open-modal>Request early access</button>
+              <button class="secondary" type="button" data-scroll="#features">Explore features</button>
+            </div>
+            <div class="trust">
+              <div class="trustItem">
+                <span class="trustValue">7 min</span>
+                <span class="trustLabel">weekly planning</span>
+              </div>
+              <div class="trustItem">
+                <span class="trustValue">1 view</span>
+                <span class="trustLabel">to align priorities</span>
+              </div>
+              <div class="trustItem">
+                <span class="trustValue">0 clutter</span>
+                <span class="trustLabel">only what’s useful</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="heroCard" aria-label="Product preview">
+            <div class="previewTop">
+              <div class="dots" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="previewTitle">This week</div>
+              <div class="previewPill">Focus first</div>
+            </div>
+            <div class="previewBody">
+              <div class="previewRow">
+                <div class="pill pillA">Deep work</div>
+                <div class="pill pillB">Health</div>
+                <div class="pill pillC">Relationships</div>
+              </div>
+              <div class="previewPanel">
+                <div class="previewPanelTitle">Planned outcomes</div>
+                <ul class="previewList">
+                  <li><span class="check" aria-hidden="true"></span>Ship the onboarding flow</li>
+                  <li><span class="check" aria-hidden="true"></span>3x gym sessions</li>
+                  <li><span class="check" aria-hidden="true"></span>Sunday weekly review</li>
+                </ul>
+              </div>
+              <div class="previewPanel">
+                <div class="previewPanelTitle">Today</div>
+                <div class="previewTimeline">
+                  <div class="block blockFocus">
+                    <div class="blockTop">
+                      <span>Focus block</span>
+                      <span class="muted">9:00–11:00</span>
+                    </div>
+                    <div class="muted">Work on: onboarding + paywall</div>
+                  </div>
+                  <div class="block blockLight">
+                    <div class="blockTop">
+                      <span>Admin</span>
+                      <span class="muted">11:00–11:30</span>
+                    </div>
+                    <div class="muted">Email, calendar, quick replies</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="previewBottom">
+              <span class="muted">Designed for clarity. Built for consistency.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section alt">
+        <div class="container">
+          <div class="sectionHead">
+            <h2>A simple story: what, who, how, and results.</h2>
+            <p class="muted">This makes it easy for visitors (and investors) to understand the product in under a minute.</p>
+          </div>
+
+          <div class="grid2">
+            <article id="problem" class="storyCard">
+              <div class="icon" aria-hidden="true">⚑</div>
+              <h3>The problem it solves</h3>
+              <p class="muted">
+                Goals don’t fail because people don’t care—they fail because priorities drift, calendars get crowded, and
+                “busy” replaces “progress.”
+              </p>
+              <ul class="bullets">
+                <li>Plans that don’t survive the week</li>
+                <li>Too many tools, too little clarity</li>
+                <li>No feedback loop to improve execution</li>
+              </ul>
+            </article>
+
+            <article id="users" class="storyCard">
+              <div class="icon" aria-hidden="true">◉</div>
+              <h3>Target users</h3>
+              <p class="muted">People who need a consistent weekly system—without turning life into a project plan.</p>
+              <ul class="bullets">
+                <li>Founders and startup builders</li>
+                <li>Operators, PMs, and leaders</li>
+                <li>Students and creators juggling multiple priorities</li>
+              </ul>
+            </article>
+
+            <article id="solution" class="storyCard">
+              <div class="icon" aria-hidden="true">✦</div>
+              <h3>The solution</h3>
+              <p class="muted">
+                ExecOS turns fuzzy goals into weekly outcomes, protects time for deep work, and makes reflection a default
+                habit—so progress compounds.
+              </p>
+              <ul class="bullets">
+                <li>Weekly outcomes → focus blocks</li>
+                <li>Decision log to reduce repeat thinking</li>
+                <li>Lightweight reviews that refine the system</li>
+              </ul>
+            </article>
+
+            <article id="outcomes" class="storyCard">
+              <div class="icon" aria-hidden="true">↗</div>
+              <h3>Measurable outcomes</h3>
+              <p class="muted">A few metrics you can track (and show) as users adopt the system.</p>
+              <div class="kpis">
+                <div class="kpi">
+                  <div class="kpiValue">+2–4</div>
+                  <div class="kpiLabel">focus blocks / week</div>
+                </div>
+                <div class="kpi">
+                  <div class="kpiValue">80%</div>
+                  <div class="kpiLabel">weekly plan completion</div>
+                </div>
+                <div class="kpi">
+                  <div class="kpiValue">−25%</div>
+                  <div class="kpiLabel">time lost to context switching</div>
+                </div>
+              </div>
+              <p class="tiny muted">Replace these with your real numbers as you measure activation and retention.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section">
+        <div class="container">
+          <div class="sectionHead">
+            <h2>Everything you need to execute.</h2>
+            <p class="muted">
+              A small set of powerful primitives—goals, time, decisions, and reflection—so you can move faster with less
+              friction.
+            </p>
+          </div>
+
+          <div class="grid3">
+            <article class="feature">
+              <div class="icon" aria-hidden="true">◎</div>
+              <h3>Weekly plan that fits reality</h3>
+              <p class="muted">Choose outcomes, allocate time, and keep the plan lightweight so you actually follow it.</p>
+            </article>
+            <article class="feature">
+              <div class="icon" aria-hidden="true">▣</div>
+              <h3>Focus blocks that protect deep work</h3>
+              <p class="muted">Reserve time for the work that matters—then make it obvious what to do when you sit down.</p>
+            </article>
+            <article class="feature">
+              <div class="icon" aria-hidden="true">↺</div>
+              <h3>Reviews that build momentum</h3>
+              <p class="muted">Capture wins, learn fast, and ship a better plan next week.</p>
+            </article>
+            <article class="feature">
+              <div class="icon" aria-hidden="true">✦</div>
+              <h3>AI that stays grounded</h3>
+              <p class="muted">Helpful suggestions and summaries—without losing control of your priorities.</p>
+            </article>
+            <article class="feature">
+              <div class="icon" aria-hidden="true">◷</div>
+              <h3>Usage awareness</h3>
+              <p class="muted">See what steals your attention and make small changes that compound.</p>
+            </article>
+            <article class="feature">
+              <div class="icon" aria-hidden="true">≋</div>
+              <h3>Decision log</h3>
+              <p class="muted">Write down what you decided and why—so your future self can move faster.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" class="section alt">
+        <div class="container">
+          <div class="sectionHead">
+            <h2>Simple pricing as you grow.</h2>
+            <p class="muted">Start free. Upgrade when it pays for itself.</p>
+          </div>
+
+          <div class="pricing">
+            <article class="priceCard">
+              <div class="priceTop">
+                <h3>Starter</h3>
+                <div class="price">$0<span class="muted">/mo</span></div>
+                <p class="muted">For personal clarity and weekly rhythm.</p>
+              </div>
+              <ul class="bullets">
+                <li>Weekly planning + review</li>
+                <li>Goal tracking</li>
+                <li>Basic calendar view</li>
+              </ul>
+              <button class="secondary full" type="button" data-open-modal>Get access</button>
+            </article>
+
+            <article class="priceCard highlighted">
+              <div class="badge">Most popular</div>
+              <div class="priceTop">
+                <h3>Pro</h3>
+                <div class="price">$12<span class="muted">/mo</span></div>
+                <p class="muted">For consistent execution and focus.</p>
+              </div>
+              <ul class="bullets">
+                <li>Everything in Starter</li>
+                <li>Focus blocks + templates</li>
+                <li>AI summaries + suggested next actions</li>
+                <li>Decision log</li>
+              </ul>
+              <button class="primary full" type="button" data-open-modal>Request access</button>
+            </article>
+
+            <article class="priceCard">
+              <div class="priceTop">
+                <h3>Team</h3>
+                <div class="price">$29<span class="muted">/seat</span></div>
+                <p class="muted">For small teams shipping every week.</p>
+              </div>
+              <ul class="bullets">
+                <li>Shared goals + initiatives</li>
+                <li>Team weekly review</li>
+                <li>Lightweight reporting</li>
+              </ul>
+              <button class="secondary full" type="button" data-open-modal>Talk to us</button>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" class="section">
+        <div class="container">
+          <div class="sectionHead">
+            <h2>FAQ</h2>
+            <p class="muted">A few quick answers.</p>
+          </div>
+          <div class="faq">
+            <details>
+              <summary>Is this a task manager?</summary>
+              <p class="muted">
+                Not really. ExecOS is a weekly execution system: outcomes, time blocks, and review. You can keep tasks
+                elsewhere and still benefit.
+              </p>
+            </details>
+            <details>
+              <summary>Can I use this with my calendar?</summary>
+              <p class="muted">Yes—the idea is to plan in outcomes and translate them into time you can protect.</p>
+            </details>
+            <details>
+              <summary>When will it be available?</summary>
+              <p class="muted">Early access is rolling. Join the list and we’ll email you when your spot opens.</p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta">
+        <div class="container ctaInner">
+          <div>
+            <h2>Build a calmer, sharper week.</h2>
+            <p class="muted">Join early access and help shape the product.</p>
+          </div>
+          <button class="primary" type="button" data-open-modal>Request early access</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footerInner">
+        <div class="footerLeft">
+          <div class="brand small">
+            <span class="brandMark" aria-hidden="true"></span>
+            <span class="brandName">ExecOS</span>
+          </div>
+          <p class="muted">A startup-style landing page you can host on GitHub Pages.</p>
+        </div>
+        <div class="footerRight">
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+          <a href="https://github.com/" rel="noreferrer" target="_blank">GitHub</a>
+        </div>
+      </div>
+      <div class="container footerBottom muted">
+        <span>© <span id="year"></span> ExecOS</span>
+        <span>Made for momentum.</span>
+      </div>
+    </footer>
+
+    <dialog class="modal" id="accessModal" aria-label="Request early access">
+      <form method="dialog" class="modalInner">
+        <div class="modalHead">
+          <div>
+            <div class="modalTitle">Request early access</div>
+            <div class="muted">No spam. Just one email when you’re in.</div>
+          </div>
+          <button class="iconBtn" value="cancel" aria-label="Close">✕</button>
+        </div>
+
+        <div class="modalBody">
+          <label class="field">
+            <span>Name</span>
+            <input name="name" autocomplete="name" placeholder="Alex" />
+          </label>
+          <label class="field">
+            <span>Email</span>
+            <input name="email" type="email" autocomplete="email" placeholder="alex@company.com" required />
+          </label>
+          <label class="field">
+            <span>What are you trying to improve?</span>
+            <select name="goal">
+              <option>Weekly planning</option>
+              <option>Focus / deep work</option>
+              <option>Consistency</option>
+              <option>Team execution</option>
+            </select>
+          </label>
+
+          <p class="tiny muted">
+            This is a demo landing page; the form stores nothing by default. You can wire it to your email provider later.
+          </p>
+        </div>
+
+        <div class="modalActions">
+          <button class="secondary" value="cancel" type="submit">Not now</button>
+          <button class="primary" id="fakeSubmit" value="default" type="submit">Join waitlist</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
