@@ -1,5 +1,6 @@
 package com.execos.ui.focus
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,8 +14,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -38,14 +42,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.execos.data.model.TaskItem
+import com.execos.ui.components.ExecGradientBackground
 import com.execos.ui.components.ExecOutlinedTextField
+import com.execos.ui.components.PlannedGoalsCard
+import com.execos.ui.components.PlannedGoalsHorizon
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -74,7 +84,7 @@ fun FocusPlannerScreen(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
+                    containerColor = Color.Transparent,
                 ),
             )
         },
@@ -93,76 +103,87 @@ fun FocusPlannerScreen(
         },
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
-        when {
-            state.loading -> {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+        ExecGradientBackground {
+            when {
+                state.loading -> {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
                 }
-            }
-            state.error != null -> {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(24.dp),
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    Text(state.error ?: "", style = MaterialTheme.typography.bodyLarge)
+                state.error != null -> {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .padding(24.dp),
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Text(state.error ?: "", style = MaterialTheme.typography.bodyLarge)
+                    }
                 }
-            }
-            else -> {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(horizontal = 16.dp)
-                        .verticalScroll(rememberScrollState()),
-                ) {
-                    val total = state.tasks.size.coerceAtLeast(1)
-                    val done = state.tasks.count { it.completed }
-                    val rate = if (state.tasks.isEmpty()) 0f else done.toFloat() / total
-                    Text(
-                        "Top 3 for ${state.date}",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        "$done of ${state.tasks.size} done · ${(rate * 100).toInt()}%",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    LinearProgressIndicator(
-                        progress = { rate },
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                    )
-                    Spacer(Modifier.height(20.dp))
-                    state.tasks.forEach { task ->
-                        TaskEditorCard(
-                            task = task,
-                            onChange = viewModel::updateTask,
-                            onToggle = { viewModel.toggleComplete(task) },
-                            onDelete = { viewModel.deleteTask(task) },
+                else -> {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .padding(horizontal = 16.dp)
+                            .verticalScroll(rememberScrollState()),
+                    ) {
+                        val total = state.tasks.size.coerceAtLeast(1)
+                        val done = state.tasks.count { it.completed }
+                        val rate = if (state.tasks.isEmpty()) 0f else done.toFloat() / total
+                        Text(
+                            "Top 3 for ${state.date}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(Modifier.height(12.dp))
-                    }
-                    if (state.tasks.isEmpty()) {
+                        PlannedGoalsCard(
+                            horizons = listOf(
+                                PlannedGoalsHorizon("Yearly", state.yearGoals.map { it.title }),
+                                PlannedGoalsHorizon("Quarter", state.quarterGoals.map { it.title }),
+                                PlannedGoalsHorizon("Month", state.monthGoals.map { it.title }),
+                                PlannedGoalsHorizon("Week", state.weekGoals.map { it.title }),
+                            ),
+                        )
+                        Spacer(Modifier.height(12.dp))
                         Text(
-                            "Tap + to add up to three high-impact tasks. Edit title, impact, and notes — everything saves as you type.",
+                            "$done of ${state.tasks.size} done · ${(rate * 100).toInt()}%",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
+                        Spacer(Modifier.height(12.dp))
+                        LinearProgressIndicator(
+                            progress = { rate },
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        state.tasks.forEach { task ->
+                            TaskEditorCard(
+                                task = task,
+                                onChange = viewModel::updateTask,
+                                onToggle = { viewModel.toggleComplete(task) },
+                                onDelete = { viewModel.deleteTask(task) },
+                            )
+                            Spacer(Modifier.height(12.dp))
+                        }
+                        if (state.tasks.isEmpty()) {
+                            Text(
+                                "Tap + to add up to three high-impact tasks. Edit title, impact, and notes — everything saves as you type.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Spacer(Modifier.height(80.dp))
                     }
-                    Spacer(Modifier.height(80.dp))
                 }
             }
         }
@@ -181,12 +202,17 @@ private fun TaskEditorCard(
     var notesDraft by remember(task.id) { mutableStateOf(task.notes) }
     var pendingSave by remember(task.id) { mutableStateOf<Job?>(null) }
 
+    val titleInteractions = remember(task.id) { MutableInteractionSource() }
+    val notesInteractions = remember(task.id) { MutableInteractionSource() }
+    val titleFocused by titleInteractions.collectIsFocusedAsState()
+    val notesFocused by notesInteractions.collectIsFocusedAsState()
+
     // Keep local drafts aligned when task changes from outside this editor.
     LaunchedEffect(task.title) {
-        if (task.title != titleDraft) titleDraft = task.title
+        if (!titleFocused && task.title != titleDraft) titleDraft = task.title
     }
     LaunchedEffect(task.notes) {
-        if (task.notes != notesDraft) notesDraft = task.notes
+        if (!notesFocused && task.notes != notesDraft) notesDraft = task.notes
     }
 
     fun scheduleSave(updated: TaskItem) {
@@ -236,6 +262,7 @@ private fun TaskEditorCard(
                 label = { Text("Priority title") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                interactionSource = titleInteractions,
             )
             Spacer(Modifier.height(12.dp))
             Text(
@@ -263,6 +290,7 @@ private fun TaskEditorCard(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 2,
                 maxLines = 8,
+                interactionSource = notesInteractions,
             )
         }
     }

@@ -82,6 +82,7 @@ fun ExecOsTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = ExecTypography,
+        shapes = ExecShapes,
         content = content,
     )
 }

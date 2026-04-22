@@ -170,5 +170,28 @@ object Migrations {
             db.execSQL("CREATE INDEX IF NOT EXISTS index_strava_activities_userId_startDate ON strava_activities(userId, startDate)")
         }
     }
+
+    val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS goals (
+                    id TEXT NOT NULL PRIMARY KEY,
+                    userId TEXT NOT NULL,
+                    periodType TEXT NOT NULL,
+                    periodKey TEXT NOT NULL,
+                    rank INTEGER NOT NULL,
+                    title TEXT NOT NULL
+                )
+                """.trimIndent(),
+            )
+            db.execSQL(
+                """
+                CREATE UNIQUE INDEX IF NOT EXISTS index_goals_userId_periodType_periodKey_rank
+                ON goals(userId, periodType, periodKey, rank)
+                """.trimIndent(),
+            )
+        }
+    }
 }
 

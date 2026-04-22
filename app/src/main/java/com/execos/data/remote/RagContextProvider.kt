@@ -1,6 +1,7 @@
 package com.execos.data.remote
 
 import com.execos.data.local.ExecOsDatabase
+import com.execos.data.model.GoalPeriod
 import com.execos.data.repo.AuthRepository
 import com.execos.util.Dates
 import javax.inject.Inject
@@ -22,6 +23,9 @@ class RagContextProvider @Inject constructor(
         val decisions = db.decisionDao().getRecentSnapshot(userId = uid, limit = 8)
         val reflections = db.reflectionDao().getRecentSnapshot(userId = uid, limit = 5)
         val strava = db.stravaActivityDao().getRecentSnapshot(userId = uid, limit = 8)
+        val quarterGoals = db.goalDao().getGoalsSnapshot(uid, GoalPeriod.QUARTER, Dates.quarterKey())
+        val monthGoals = db.goalDao().getGoalsSnapshot(uid, GoalPeriod.MONTH, Dates.monthKey())
+        val weekGoals = db.goalDao().getGoalsSnapshot(uid, GoalPeriod.WEEK, Dates.weekStartIso())
 
         return buildString {
             if (tasks.isNotEmpty()) {
@@ -58,7 +62,12 @@ class RagContextProvider @Inject constructor(
                     val km = a.distanceMeters / 1000.0
                     appendLine("- ${a.type}: ${a.name.ifBlank { "(no name)" }} | ${mins}m | ${"%.1f".format(km)}km | ${a.startDate}")
                 }
+                appendLine()
             }
+            appendLine("Planned goals:")
+            appendLine("- Quarter: " + quarterGoals.joinToString(" | ") { it.title }.ifBlank { "none" })
+            appendLine("- Month: " + monthGoals.joinToString(" | ") { it.title }.ifBlank { "none" })
+            appendLine("- Week: " + weekGoals.joinToString(" | ") { it.title }.ifBlank { "none" })
         }.trim()
     }
 }

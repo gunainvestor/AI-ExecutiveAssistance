@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Today
@@ -24,10 +25,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -36,11 +40,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.execos.ui.components.ExecGradientBackground
 import com.execos.ui.navigation.Routes
 
 private data class FeatureTile(
@@ -55,13 +61,18 @@ private data class FeatureTile(
 fun HomeScreen(
     onNavigate: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
+    dailyFeedbackViewModel: DailyFeedbackViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val feedback by dailyFeedbackViewModel.popup.collectAsStateWithLifecycle()
     val tiles = listOf(
         FeatureTile(Routes.Focus, "Top 3", "Plan today’s impact", Icons.Default.Today),
         FeatureTile(Routes.Decisions, "Decisions", "Context & confidence", Icons.Default.Psychology),
         FeatureTile(Routes.Reflection, "Reflection", "AI review of your day", Icons.Default.CheckCircle),
         FeatureTile(Routes.Weekly, "Weekly review", "Patterns & growth", Icons.Default.TrackChanges),
+        FeatureTile(Routes.Calendar, "Calendar", "See your month at a glance", Icons.Default.DateRange),
+        FeatureTile(Routes.Goals, "Goals", "Year/quarter/month/week top 3", Icons.Default.TrackChanges),
+        FeatureTile(Routes.Usage, "Usage", "See time-wasters (daily/weekly)", Icons.Default.TrackChanges),
         FeatureTile(Routes.Energy, "Energy", "Morning & evening", Icons.Default.Bolt),
     )
 
@@ -88,88 +99,113 @@ fun HomeScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
+                    containerColor = Color.Transparent,
                 ),
             )
         },
     ) { padding ->
-        when {
-            state.loading -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            }
-            state.error != null -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(24.dp),
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    Text("Could not start", style = MaterialTheme.typography.titleLarge)
-                    Spacer(Modifier.height(8.dp))
-                    Text(state.error ?: "", style = MaterialTheme.typography.bodyMedium)
-                }
-            }
-            else -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    item {
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            ),
-                            shape = MaterialTheme.shapes.large,
+        ExecGradientBackground {
+            if (feedback != null) {
+                val f = feedback!!
+                AlertDialog(
+                    onDismissRequest = { dailyFeedbackViewModel.markShown(f) },
+                    title = { Text("Daily feedback") },
+                    text = { Text(f.text) },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                dailyFeedbackViewModel.markShown(f)
+                                onNavigate(Routes.Reflection)
+                            },
                         ) {
-                            Column(Modifier.padding(20.dp)) {
-                                Text(
-                                    "Today",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                )
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    "Start with priorities, then log decisions and a quick reflection.",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                )
-                            }
+                            Text("Open reflection")
                         }
+                    },
+                    dismissButton = {
+                        OutlinedButton(onClick = { dailyFeedbackViewModel.markShown(f) }) {
+                            Text("Dismiss")
+                        }
+                    },
+                )
+            }
+            when {
+                state.loading -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
-                    item {
-                        PrioritiesCard(state.todayTasks)
+                }
+                state.error != null -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .padding(24.dp),
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Text("Could not start", style = MaterialTheme.typography.titleLarge)
+                        Spacer(Modifier.height(8.dp))
+                        Text(state.error ?: "", style = MaterialTheme.typography.bodyMedium)
                     }
-                    item {
-                        Text(
-                            "Workspace",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                    }
-                    items(tiles.chunked(2)) { rowTiles ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        ) {
-                            rowTiles.forEach { tile ->
-                                Box(modifier = Modifier.weight(1f)) {
-                                    FeatureCard(tile) { onNavigate(tile.route) }
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        item {
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                ),
+                                shape = MaterialTheme.shapes.large,
+                            ) {
+                                Column(Modifier.padding(20.dp)) {
+                                    Text(
+                                        "Today",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    )
+                                    Spacer(Modifier.height(4.dp))
+                                    Text(
+                                        "Start with priorities, then log decisions and a quick reflection.",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    )
                                 }
                             }
-                            if (rowTiles.size == 1) {
-                                Spacer(Modifier.weight(1f))
+                        }
+                        item {
+                            PrioritiesCard(state.todayTasks)
+                        }
+                        item {
+                            Text(
+                                "Workspace",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                        }
+                        items(tiles.chunked(2)) { rowTiles ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            ) {
+                                rowTiles.forEach { tile ->
+                                    Box(modifier = Modifier.weight(1f)) {
+                                        FeatureCard(tile) { onNavigate(tile.route) }
+                                    }
+                                }
+                                if (rowTiles.size == 1) {
+                                    Spacer(Modifier.weight(1f))
+                                }
                             }
                         }
                     }

@@ -3,11 +3,14 @@ package com.execos.ui.weekly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.execos.data.model.DecisionItem
+import com.execos.data.model.GoalItem
+import com.execos.data.model.GoalPeriod
 import com.execos.data.model.TaskItem
 import com.execos.data.model.WeeklyReviewItem
 import com.execos.data.remote.AiService
 import com.execos.data.repo.AuthRepository
 import com.execos.data.repo.DecisionRepository
+import com.execos.data.repo.GoalRepository
 import com.execos.data.repo.TaskRepository
 import com.execos.data.repo.WeeklyReviewRepository
 import com.execos.util.Dates
@@ -30,6 +33,10 @@ data class WeeklyUiState(
     val weekStart: String = Dates.weekStartIso(),
     val weekTasks: List<TaskItem> = emptyList(),
     val weekDecisions: List<DecisionItem> = emptyList(),
+    val yearGoals: List<GoalItem> = emptyList(),
+    val quarterGoals: List<GoalItem> = emptyList(),
+    val monthGoals: List<GoalItem> = emptyList(),
+    val weekGoals: List<GoalItem> = emptyList(),
     val completedTasks: List<TaskItem> = emptyList(),
     val wins: String = "",
     val mistakes: String = "",
@@ -46,6 +53,7 @@ class WeeklyReviewViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val decisionRepository: DecisionRepository,
     private val weeklyReviewRepository: WeeklyReviewRepository,
+    private val goalRepository: GoalRepository,
     private val aiService: AiService,
 ) : ViewModel() {
     private val uid = MutableStateFlow<String?>(null)
@@ -84,6 +92,18 @@ class WeeklyReviewViewModel @Inject constructor(
             decisionRepository.observeDecisionsInRange(u, ws, end)
         }
     }
+    private val yearGoalsFlow = uid.flatMapLatest { u ->
+        if (u == null) flowOf(emptyList()) else goalRepository.observeGoals(u, GoalPeriod.YEAR, Dates.yearKey())
+    }
+    private val quarterGoalsFlow = uid.flatMapLatest { u ->
+        if (u == null) flowOf(emptyList()) else goalRepository.observeGoals(u, GoalPeriod.QUARTER, Dates.quarterKey())
+    }
+    private val monthGoalsFlow = uid.flatMapLatest { u ->
+        if (u == null) flowOf(emptyList()) else goalRepository.observeGoals(u, GoalPeriod.MONTH, Dates.monthKey())
+    }
+    private val weekGoalsFlow = combine(uid, weekStart) { u, ws -> u to ws }.flatMapLatest { (u, ws) ->
+        if (u == null) flowOf(emptyList()) else goalRepository.observeGoals(u, GoalPeriod.WEEK, ws)
+    }
 
     private data class WeeklyCore(
         val error: String?,
@@ -91,6 +111,10 @@ class WeeklyReviewViewModel @Inject constructor(
         val weekStart: String,
         val tasks: List<TaskItem>,
         val decisions: List<DecisionItem>,
+        val yearGoals: List<GoalItem>,
+        val quarterGoals: List<GoalItem>,
+        val monthGoals: List<GoalItem>,
+        val weekGoals: List<GoalItem>,
     )
 
     private data class WeeklyFields(
@@ -107,8 +131,25 @@ class WeeklyReviewViewModel @Inject constructor(
     )
 
     val uiState: StateFlow<WeeklyUiState> = combine(
-        combine(authError, uid, weekStart, tasksFlow, decisionsFlow) { err, u, ws, tasks, decs ->
-            WeeklyCore(err, u, ws, tasks, decs)
+        combine(
+            combine(authError, uid, weekStart, tasksFlow, decisionsFlow) { err, u, ws, tasks, decs ->
+                Quint(err, u, ws, tasks, decs)
+            },
+            combine(yearGoalsFlow, quarterGoalsFlow, monthGoalsFlow, weekGoalsFlow) { yGoals, qGoals, mGoals, wGoals ->
+                GoalsPack(yGoals, qGoals, mGoals, wGoals)
+            },
+        ) { head, gp ->
+            WeeklyCore(
+                error = head.err,
+                uid = head.uid,
+                weekStart = head.weekStart,
+                tasks = head.tasks,
+                decisions = head.decisions,
+                yearGoals = gp.yearGoals,
+                quarterGoals = gp.quarterGoals,
+                monthGoals = gp.monthGoals,
+                weekGoals = gp.weekGoals,
+            )
         },
         combine(wins, mistakes, learnings, aiSummary) { w, m, l, ai ->
             WeeklyFields(w, m, l, ai)
@@ -123,6 +164,10 @@ class WeeklyReviewViewModel @Inject constructor(
             weekStart = core.weekStart,
             weekTasks = core.tasks,
             weekDecisions = core.decisions,
+            yearGoals = core.yearGoals,
+            quarterGoals = core.quarterGoals,
+            monthGoals = core.monthGoals,
+            weekGoals = core.weekGoals,
             completedTasks = core.tasks.filter { it.completed },
             wins = fields.wins,
             mistakes = fields.mistakes,
@@ -136,6 +181,21 @@ class WeeklyReviewViewModel @Inject constructor(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = WeeklyUiState(),
+    )
+
+    private data class Quint(
+        val err: String?,
+        val uid: String?,
+        val weekStart: String,
+        val tasks: List<TaskItem>,
+        val decisions: List<DecisionItem>,
+    )
+
+    private data class GoalsPack(
+        val yearGoals: List<GoalItem>,
+        val quarterGoals: List<GoalItem>,
+        val monthGoals: List<GoalItem>,
+        val weekGoals: List<GoalItem>,
     )
 
     init {
@@ -216,9 +276,18 @@ class WeeklyReviewViewModel @Inject constructor(
             val decSummary = s.weekDecisions.joinToString("; ") { d ->
                 d.title
             }.ifBlank { "None logged" }
+            val plannedGoalsSummary = buildString {
+                append("Quarter: ")
+                append(s.quarterGoals.joinToString(" | ") { it.title }.ifBlank { "none" })
+                append("; Month: ")
+                append(s.monthGoals.joinToString(" | ") { it.title }.ifBlank { "none" })
+                append("; Week: ")
+                append(s.weekGoals.joinToString(" | ") { it.title }.ifBlank { "none" })
+            }
             val result = aiService.weeklySummary(
                 completedTasksSummary = tasksSummary,
                 decisionsSummary = decSummary,
+                plannedGoalsSummary = plannedGoalsSummary,
                 wins = s.wins,
                 mistakes = s.mistakes,
                 learnings = s.learnings,

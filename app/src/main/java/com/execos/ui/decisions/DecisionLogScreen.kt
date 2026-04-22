@@ -46,11 +46,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.execos.data.model.DecisionItem
+import com.execos.ui.components.ExecGradientBackground
 import com.execos.ui.components.ExecOutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,7 +77,7 @@ fun DecisionLogScreen(
                     Text("Decision log", fontWeight = FontWeight.SemiBold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
+                    containerColor = Color.Transparent,
                 ),
             )
         },
@@ -92,41 +94,43 @@ fun DecisionLogScreen(
         },
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
-        when {
-            state.loading -> {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            }
-            state.error != null -> {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(24.dp),
-                ) {
-                    Text(state.error ?: "")
-                }
-            }
-            else -> {
-                LazyColumn(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    item { Spacer(Modifier.height(4.dp)) }
-                    items(state.decisions, key = { it.id }) { item ->
-                        DecisionRow(item) { viewModel.openEdit(item) }
+        ExecGradientBackground {
+            when {
+                state.loading -> {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
-                    item { Spacer(Modifier.height(72.dp)) }
+                }
+                state.error != null -> {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .padding(24.dp),
+                    ) {
+                        Text(state.error ?: "")
+                    }
+                }
+                else -> {
+                    LazyColumn(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        item { Spacer(Modifier.height(4.dp)) }
+                        items(state.decisions, key = { it.id }) { item ->
+                            DecisionRow(item) { viewModel.openEdit(item) }
+                        }
+                        item { Spacer(Modifier.height(72.dp)) }
+                    }
                 }
             }
         }

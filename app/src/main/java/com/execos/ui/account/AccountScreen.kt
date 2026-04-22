@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.execos.ui.components.ExecGradientBackground
 import com.execos.ui.components.ExecOutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,51 +73,61 @@ fun AccountScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Account", fontWeight = FontWeight.SemiBold) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
             )
         },
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .imePadding()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text(
-                if (state.currentEmail == null) "Not signed in (using local journal)"
-                else "Signed in as ${state.currentEmail}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+        ExecGradientBackground {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .imePadding()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Text(
+                    if (state.currentEmail == null) "Not signed in (using local journal)"
+                    else "Signed in as ${state.currentEmail}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
 
-            ExecOutlinedTextField(
-                value = state.email,
-                onValueChange = viewModel::setEmail,
-                label = { Text("Email") },
-                placeholder = { Text("you@company.com") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                imeAction = ImeAction.Next,
-            )
+                ExecOutlinedTextField(
+                    value = state.email,
+                    onValueChange = viewModel::setEmail,
+                    label = { Text("Email") },
+                    placeholder = { Text("you@company.com") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    imeAction = ImeAction.Next,
+                )
 
-            OutlinedTextField(
-                value = state.password,
-                onValueChange = viewModel::setPassword,
-                label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done,
-                ),
-                shape = MaterialTheme.shapes.large,
-            )
+                OutlinedTextField(
+                    value = state.password,
+                    onValueChange = viewModel::setPassword,
+                    label = { Text("Password") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done,
+                    ),
+                    shape = MaterialTheme.shapes.large,
+                    colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+                )
 
             Spacer(Modifier.height(4.dp))
             Button(
@@ -190,6 +202,7 @@ fun AccountScreen(
                 ) {
                     Text("Connect Strava")
                 }
+            }
             }
         }
     }

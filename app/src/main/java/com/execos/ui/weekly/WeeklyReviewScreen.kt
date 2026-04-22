@@ -35,11 +35,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.execos.ui.components.ExecGradientBackground
 import com.execos.ui.components.ExecOutlinedTextField
+import com.execos.ui.components.PlannedGoalsCard
+import com.execos.ui.components.PlannedGoalsHorizon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,128 +66,139 @@ fun WeeklyReviewScreen(
                     Text("Weekly review", fontWeight = FontWeight.SemiBold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
+                    containerColor = Color.Transparent,
                 ),
             )
         },
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
-        when {
-            state.loading -> {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            }
-            state.error != null -> {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(24.dp),
-                ) {
-                    Text(state.error ?: "")
-                }
-            }
-            else -> {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .imePadding()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 24.dp),
-                ) {
-                    CardWeekSelector(
-                        weekLabel = state.weekStart,
-                        onPrev = { viewModel.shiftWeek(-1) },
-                        onNext = { viewModel.shiftWeek(1) },
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    Text(
-                        "This week you completed ${state.completedTasks.size} tasks and logged ${state.weekDecisions.size} decisions.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.height(20.dp))
-                    ExecOutlinedTextField(
-                        value = state.wins,
-                        onValueChange = viewModel::setWins,
-                        label = { Text("Wins") },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 2,
-                        maxLines = 8,
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    ExecOutlinedTextField(
-                        value = state.mistakes,
-                        onValueChange = viewModel::setMistakes,
-                        label = { Text("Mistakes / misses") },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 2,
-                        maxLines = 8,
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    ExecOutlinedTextField(
-                        value = state.learnings,
-                        onValueChange = viewModel::setLearnings,
-                        label = { Text("Learnings") },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 2,
-                        maxLines = 8,
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    Text(
-                        "Summary uses journal context (RAG) and the same tools as Decision AI—recent decisions, today’s priorities, and reflections—when the model needs more detail.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    Button(
-                        onClick = { viewModel.runAiSummary() },
-                        enabled = !state.aiBusy,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                        ),
+        ExecGradientBackground {
+            when {
+                state.loading -> {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        if (state.aiBusy) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                strokeWidth = 2.dp,
-                            )
-                        } else {
-                            Text("Generate AI summary")
-                        }
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedButton(
-                        onClick = { viewModel.save() },
-                        enabled = !state.saveBusy,
-                        modifier = Modifier.fillMaxWidth(),
+                }
+                state.error != null -> {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .padding(24.dp),
                     ) {
-                        Text("Save week")
+                        Text(state.error ?: "")
                     }
-                    if (state.aiSummary.isNotBlank()) {
-                        Spacer(Modifier.height(20.dp))
-                        Text(
-                            "AI summary",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold,
+                }
+                else -> {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .imePadding()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 24.dp),
+                    ) {
+                        CardWeekSelector(
+                            weekLabel = state.weekStart,
+                            onPrev = { viewModel.shiftWeek(-1) },
+                            onNext = { viewModel.shiftWeek(1) },
                         )
-                        Spacer(Modifier.height(8.dp))
+                        Spacer(Modifier.height(16.dp))
+                        PlannedGoalsCard(
+                            horizons = listOf(
+                                PlannedGoalsHorizon("Yearly", state.yearGoals.map { it.title }),
+                                PlannedGoalsHorizon("Quarter", state.quarterGoals.map { it.title }),
+                                PlannedGoalsHorizon("Month", state.monthGoals.map { it.title }),
+                                PlannedGoalsHorizon("Week", state.weekGoals.map { it.title }),
+                            ),
+                        )
+                        Spacer(Modifier.height(16.dp))
                         Text(
-                            state.aiSummary,
+                            "This week you completed ${state.completedTasks.size} tasks and logged ${state.weekDecisions.size} decisions.",
                             style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
+                        Spacer(Modifier.height(20.dp))
+                        ExecOutlinedTextField(
+                            value = state.wins,
+                            onValueChange = viewModel::setWins,
+                            label = { Text("Wins") },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 2,
+                            maxLines = 8,
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        ExecOutlinedTextField(
+                            value = state.mistakes,
+                            onValueChange = viewModel::setMistakes,
+                            label = { Text("Mistakes / misses") },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 2,
+                            maxLines = 8,
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        ExecOutlinedTextField(
+                            value = state.learnings,
+                            onValueChange = viewModel::setLearnings,
+                            label = { Text("Learnings") },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 2,
+                            maxLines = 8,
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            "Summary uses journal context (RAG) and the same tools as Decision AI—recent decisions, today’s priorities, and reflections—when the model needs more detail.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        Button(
+                            onClick = { viewModel.runAiSummary() },
+                            enabled = !state.aiBusy,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                            ),
+                        ) {
+                            if (state.aiBusy) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    strokeWidth = 2.dp,
+                                )
+                            } else {
+                                Text("Generate AI summary")
+                            }
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        OutlinedButton(
+                            onClick = { viewModel.save() },
+                            enabled = !state.saveBusy,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text("Save week")
+                        }
+                        if (state.aiSummary.isNotBlank()) {
+                            Spacer(Modifier.height(20.dp))
+                            Text(
+                                "AI summary",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                state.aiSummary,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
                     }
                 }
             }

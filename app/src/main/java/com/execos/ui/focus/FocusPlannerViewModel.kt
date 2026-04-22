@@ -2,8 +2,11 @@ package com.execos.ui.focus
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.execos.data.model.GoalItem
+import com.execos.data.model.GoalPeriod
 import com.execos.data.model.TaskItem
 import com.execos.data.repo.AuthRepository
+import com.execos.data.repo.GoalRepository
 import com.execos.data.repo.TaskRepository
 import com.execos.util.Dates
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +25,10 @@ data class FocusUiState(
     val error: String? = null,
     val date: String = Dates.todayIso(),
     val tasks: List<TaskItem> = emptyList(),
+    val yearGoals: List<GoalItem> = emptyList(),
+    val quarterGoals: List<GoalItem> = emptyList(),
+    val monthGoals: List<GoalItem> = emptyList(),
+    val weekGoals: List<GoalItem> = emptyList(),
     val busy: Boolean = false,
     val message: String? = null,
 )
@@ -30,6 +37,7 @@ data class FocusUiState(
 class FocusPlannerViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val taskRepository: TaskRepository,
+    private val goalRepository: GoalRepository,
 ) : ViewModel() {
     private val uid = MutableStateFlow<String?>(null)
     private val authError = MutableStateFlow<String?>(null)
@@ -42,6 +50,18 @@ class FocusPlannerViewModel @Inject constructor(
             if (u == null) flowOf(emptyList())
             else taskRepository.observeTasksForDate(u, d)
         }
+    private val yearGoalsFlow = uid.flatMapLatest { u ->
+        if (u == null) flowOf(emptyList()) else goalRepository.observeGoals(u, GoalPeriod.YEAR, Dates.yearKey())
+    }
+    private val quarterGoalsFlow = uid.flatMapLatest { u ->
+        if (u == null) flowOf(emptyList()) else goalRepository.observeGoals(u, GoalPeriod.QUARTER, Dates.quarterKey())
+    }
+    private val monthGoalsFlow = uid.flatMapLatest { u ->
+        if (u == null) flowOf(emptyList()) else goalRepository.observeGoals(u, GoalPeriod.MONTH, Dates.monthKey())
+    }
+    private val weekGoalsFlow = uid.flatMapLatest { u ->
+        if (u == null) flowOf(emptyList()) else goalRepository.observeGoals(u, GoalPeriod.WEEK, Dates.weekStartIso())
+    }
 
     private data class FocusCore(
         val error: String?,
@@ -51,17 +71,31 @@ class FocusPlannerViewModel @Inject constructor(
         val message: String?,
     )
 
+    private data class GoalsPack(
+        val tasks: List<TaskItem>,
+        val yearGoals: List<GoalItem>,
+        val quarterGoals: List<GoalItem>,
+        val monthGoals: List<GoalItem>,
+        val weekGoals: List<GoalItem>,
+    )
+
     val uiState: StateFlow<FocusUiState> = combine(
         combine(authError, uid, dateFlow, busy, flash) { err, u, date, b, msg ->
             FocusCore(err, u, date, b, msg)
         },
-        tasksFlow,
-    ) { core, tasks ->
+        combine(tasksFlow, yearGoalsFlow, quarterGoalsFlow, monthGoalsFlow, weekGoalsFlow) { tasks, yGoals, qGoals, mGoals, wGoals ->
+            GoalsPack(tasks, yGoals, qGoals, mGoals, wGoals)
+        },
+    ) { core, goals ->
         FocusUiState(
             loading = core.error == null && core.uid == null,
             error = core.error,
             date = core.date,
-            tasks = tasks,
+            tasks = goals.tasks,
+            yearGoals = goals.yearGoals,
+            quarterGoals = goals.quarterGoals,
+            monthGoals = goals.monthGoals,
+            weekGoals = goals.weekGoals,
             busy = core.busy,
             message = core.message,
         )

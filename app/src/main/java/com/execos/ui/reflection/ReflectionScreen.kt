@@ -29,10 +29,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.execos.ui.components.ExecGradientBackground
 import com.execos.ui.components.ExecOutlinedTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,128 +58,130 @@ fun ReflectionScreen(
                     Text("Daily reflection", fontWeight = FontWeight.SemiBold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
+                    containerColor = Color.Transparent,
                 ),
             )
         },
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
-        when {
-            state.loading -> {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            }
-            state.error != null -> {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(24.dp),
-                ) {
-                    Text(state.error ?: "")
-                }
-            }
-            else -> {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .imePadding()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 24.dp),
-                ) {
-                    Text(
-                        "What did you do today?",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        "Write freely — then generate coaching-style insights.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Spacer(Modifier.height(6.dp))
-                    Text(
-                        "Insights stream in live as they are generated (journal context is included automatically).",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    ExecOutlinedTextField(
-                        value = state.input,
-                        onValueChange = viewModel::setInput,
-                        label = { Text("Your day") },
-                        placeholder = { Text("Outcomes, 1:1s, blockers, wins…") },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 5,
-                        maxLines = 14,
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    Button(
-                        onClick = { viewModel.generate() },
-                        enabled = !state.busy,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                        ),
+        ExecGradientBackground {
+            when {
+                state.loading -> {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        if (state.busy) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                strokeWidth = 2.dp,
-                            )
-                        } else {
-                            Text("Generate insights (streaming)")
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
+                }
+                state.error != null -> {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .padding(24.dp),
+                    ) {
+                        Text(state.error ?: "")
+                    }
+                }
+                else -> {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .imePadding()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 24.dp),
+                    ) {
+                        Text(
+                            "What did you do today?",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            "Write freely — then generate coaching-style insights.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            "Insights stream in live as they are generated (journal context is included automatically).",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        ExecOutlinedTextField(
+                            value = state.input,
+                            onValueChange = viewModel::setInput,
+                            label = { Text("Your day") },
+                            placeholder = { Text("Outcomes, 1:1s, blockers, wins…") },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 5,
+                            maxLines = 14,
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        Button(
+                            onClick = { viewModel.generate() },
+                            enabled = !state.busy,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                            ),
+                        ) {
+                            if (state.busy) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    strokeWidth = 2.dp,
+                                )
+                            } else {
+                                Text("Generate insights (streaming)")
+                            }
                         }
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedButton(
-                        onClick = { viewModel.save() },
-                        enabled = state.input.isNotBlank() || state.aiOutput.isNotBlank(),
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text("Save to journal")
-                    }
-                    if (state.aiOutput.isNotBlank()) {
-                        Spacer(Modifier.height(24.dp))
-                        Text(
-                            "Insights",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold,
-                        )
                         Spacer(Modifier.height(8.dp))
-                        Text(
-                            state.aiOutput,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                    if (state.recent.isNotEmpty()) {
-                        Spacer(Modifier.height(24.dp))
-                        Text(
-                            "Recent entries",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        state.recent.take(5).forEach { r ->
+                        OutlinedButton(
+                            onClick = { viewModel.save() },
+                            enabled = state.input.isNotBlank() || state.aiOutput.isNotBlank(),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text("Save to journal")
+                        }
+                        if (state.aiOutput.isNotBlank()) {
+                            Spacer(Modifier.height(24.dp))
                             Text(
-                                "${r.date}: ${r.textInput.take(90)}${if (r.textInput.length > 90) "…" else ""}",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(vertical = 6.dp),
+                                "Insights",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
                             )
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                state.aiOutput,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
+                        if (state.recent.isNotEmpty()) {
+                            Spacer(Modifier.height(24.dp))
+                            Text(
+                                "Recent entries",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            state.recent.take(5).forEach { r ->
+                                Text(
+                                    "${r.date}: ${r.textInput.take(90)}${if (r.textInput.length > 90) "…" else ""}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(vertical = 6.dp),
+                                )
+                            }
                         }
                     }
                 }

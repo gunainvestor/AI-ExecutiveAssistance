@@ -18,6 +18,10 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): ExecOsDatabase =
         Room.databaseBuilder(context, ExecOsDatabase::class.java, "execos.db")
-            .addMigrations(Migrations.MIGRATION_1_2, Migrations.MIGRATION_2_3)
+            .addMigrations(
+                Migrations.MIGRATION_1_2,
+                Migrations.MIGRATION_2_3,
+                Migrations.MIGRATION_3_4,
+            )
             .build()
 }

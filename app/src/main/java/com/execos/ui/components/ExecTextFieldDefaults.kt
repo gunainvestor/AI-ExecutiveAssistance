@@ -1,6 +1,7 @@
 package com.execos.ui.components
 
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -21,14 +22,15 @@ fun ExecOutlinedTextField(
     maxLines: Int = if (singleLine) 1 else 12,
     imeAction: ImeAction = if (singleLine) ImeAction.Next else ImeAction.Default,
     enabled: Boolean = true,
+    interactionSource: MutableInteractionSource = androidx.compose.runtime.remember { MutableInteractionSource() },
 ) {
     val colors = OutlinedTextFieldDefaults.colors(
         focusedBorderColor = MaterialTheme.colorScheme.primary,
         unfocusedBorderColor = MaterialTheme.colorScheme.outline,
         focusedLabelColor = MaterialTheme.colorScheme.primary,
         cursorColor = MaterialTheme.colorScheme.primary,
-        focusedContainerColor = MaterialTheme.colorScheme.surface,
-        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
         disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
     )
     OutlinedTextField(
@@ -43,6 +45,7 @@ fun ExecOutlinedTextField(
         maxLines = maxLines,
         colors = colors,
         shape = MaterialTheme.shapes.large,
+        interactionSource = interactionSource,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Sentences,
             imeAction = imeAction,

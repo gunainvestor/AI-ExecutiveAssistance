@@ -6,17 +6,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.navArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.execos.ui.account.AccountScreen
+import com.execos.ui.calendar.CalendarDayDetailsScreen
+import com.execos.ui.calendar.CalendarScreen
 import com.execos.ui.decisions.DecisionLogScreen
 import com.execos.ui.energy.EnergyTrackerScreen
 import com.execos.ui.focus.FocusPlannerScreen
+import com.execos.ui.goals.GoalsScreen
 import com.execos.ui.home.HomeScreen
 import com.execos.ui.reflection.ReflectionScreen
+import com.execos.ui.usage.UsageScreen
 import com.execos.ui.weekly.WeeklyReviewScreen
 
 @Composable
@@ -83,6 +89,27 @@ fun ExecOsNavHost() {
             }
             composable(Routes.Account) {
                 AccountScreen(onBack = { navController.popBackStack() })
+            }
+            composable(Routes.Goals) {
+                GoalsScreen()
+            }
+            composable(Routes.Usage) {
+                UsageScreen()
+            }
+            composable(Routes.Calendar) {
+                CalendarScreen(
+                    onOpenDateDetails = { dateIso ->
+                        navController.navigate(Routes.calendarDayDetails(dateIso)) {
+                            launchSingleTop = true
+                        }
+                    },
+                )
+            }
+            composable(
+                route = Routes.CalendarDayDetails,
+                arguments = listOf(navArgument("dateIso") { type = NavType.StringType }),
+            ) {
+                CalendarDayDetailsScreen(onBack = { navController.popBackStack() })
             }
         }
     }

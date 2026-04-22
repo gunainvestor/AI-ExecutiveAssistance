@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.execos.data.local.entity.DecisionEntity
 import com.execos.data.local.entity.EnergyEntity
+import com.execos.data.local.entity.GoalEntity
 import com.execos.data.local.entity.ReflectionEntity
 import com.execos.data.local.entity.StravaActivityEntity
 import com.execos.data.local.entity.TaskEntity
@@ -19,8 +20,9 @@ import com.execos.data.local.entity.WeeklyReviewEntity
         EnergyEntity::class,
         WeeklyReviewEntity::class,
         StravaActivityEntity::class,
+        GoalEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 abstract class ExecOsDatabase : RoomDatabase() {
@@ -31,4 +33,5 @@ abstract class ExecOsDatabase : RoomDatabase() {
     abstract fun energyDao(): EnergyDao
     abstract fun weeklyReviewDao(): WeeklyReviewDao
     abstract fun stravaActivityDao(): StravaActivityDao
+    abstract fun goalDao(): GoalDao
 }
