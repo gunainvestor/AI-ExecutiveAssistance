@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.execos.ui.account.AccountScreen
+import com.execos.ui.coach.AiCoachScreen
 import com.execos.ui.calendar.CalendarDayDetailsScreen
 import com.execos.ui.calendar.CalendarScreen
 import com.execos.ui.decisions.DecisionLogScreen
@@ -50,10 +51,10 @@ fun ExecOsNavHost() {
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = Routes.Home,
+            startDestination = Routes.Focus,
             modifier = Modifier.padding(padding),
         ) {
-            composable(Routes.Home) {
+            composable(Routes.Focus) {
                 HomeScreen(
                     onNavigate = { route ->
                         if (route == Routes.Energy) {
@@ -72,11 +73,14 @@ fun ExecOsNavHost() {
                     },
                 )
             }
-            composable(Routes.Focus) {
+            composable(Routes.Home) {
                 FocusPlannerScreen()
             }
             composable(Routes.Decisions) {
                 DecisionLogScreen()
+            }
+            composable(Routes.AiCoach) {
+                AiCoachScreen()
             }
             composable(Routes.Reflection) {
                 ReflectionScreen()

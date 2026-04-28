@@ -2,6 +2,7 @@ package com.execos.ui.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.execos.BuildConfig
 import com.execos.data.repo.AuthRepository
 import com.execos.data.strava.StravaOAuth
 import com.execos.data.strava.StravaRepository
@@ -175,6 +176,10 @@ class AccountViewModel @Inject constructor(
      */
     fun connectStrava() {
         viewModelScope.launch {
+            if (BuildConfig.STRAVA_CLIENT_ID.isBlank() || BuildConfig.STRAVA_CLIENT_SECRET.isBlank()) {
+                message.value = "Strava is not configured. Add STRAVA_CLIENT_ID and STRAVA_CLIENT_SECRET in local.properties."
+                return@launch
+            }
             val req = stravaOAuth.buildAuthRequest()
             val intent = stravaOAuth.authorizationService().getAuthorizationRequestIntent(req)
             authIntents.trySend(intent)
@@ -204,7 +209,7 @@ class AccountViewModel @Inject constructor(
                 stravaConnected.value = true
                 message.value = "Strava connected."
             } catch (e: Exception) {
-                message.value = e.message ?: "Strava connect failed"
+                message.value = "Strava connect failed: ${e.message ?: "unknown error"}"
             } finally {
                 busy.value = false
             }

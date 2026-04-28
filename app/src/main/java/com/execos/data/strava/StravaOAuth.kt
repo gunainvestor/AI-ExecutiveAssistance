@@ -19,7 +19,7 @@ class StravaOAuth @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
     private val serviceConfig = AuthorizationServiceConfiguration(
-        Uri.parse("https://www.strava.com/oauth/authorize"),
+        Uri.parse("https://www.strava.com/oauth/mobile/authorize"),
         Uri.parse("https://www.strava.com/oauth/token"),
     )
 

@@ -63,7 +63,7 @@ fun WeeklyReviewScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Weekly review", fontWeight = FontWeight.SemiBold)
+                    Text("How did you perform this week?", fontWeight = FontWeight.SemiBold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
@@ -120,8 +120,18 @@ fun WeeklyReviewScreen(
                             ),
                         )
                         Spacer(Modifier.height(16.dp))
+                        val completed = state.completedTasks.size
+                        val total = state.weekTasks.size.coerceAtLeast(1)
+                        val effectiveness = if (state.weekTasks.isEmpty()) 52 else ((completed.toFloat() / total) * 70f + 30f).toInt().coerceIn(0, 100)
                         Text(
-                            "This week you completed ${state.completedTasks.size} tasks and logged ${state.weekDecisions.size} decisions.",
+                            "Weekly Effectiveness: $effectiveness%",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            "You completed $completed of ${state.weekTasks.size} planned tasks and logged ${state.weekDecisions.size} decisions.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -129,7 +139,7 @@ fun WeeklyReviewScreen(
                         ExecOutlinedTextField(
                             value = state.wins,
                             onValueChange = viewModel::setWins,
-                            label = { Text("Wins") },
+                            label = { Text("Wins (what compounded outcomes)") },
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 2,
                             maxLines = 8,
@@ -138,7 +148,7 @@ fun WeeklyReviewScreen(
                         ExecOutlinedTextField(
                             value = state.mistakes,
                             onValueChange = viewModel::setMistakes,
-                            label = { Text("Mistakes / misses") },
+                            label = { Text("Misses (where execution dropped)") },
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 2,
                             maxLines = 8,
@@ -147,14 +157,14 @@ fun WeeklyReviewScreen(
                         ExecOutlinedTextField(
                             value = state.learnings,
                             onValueChange = viewModel::setLearnings,
-                            label = { Text("Learnings") },
+                            label = { Text("Operating learnings") },
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 2,
                             maxLines = 8,
                         )
                         Spacer(Modifier.height(12.dp))
                         Text(
-                            "Summary uses journal context (RAG) and the same tools as Decision AI—recent decisions, today’s priorities, and reflections—when the model needs more detail.",
+                            "AI summary compares planning quality vs execution consistency and detects drift patterns.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary,
                         )
@@ -175,7 +185,7 @@ fun WeeklyReviewScreen(
                                     strokeWidth = 2.dp,
                                 )
                             } else {
-                                Text("Generate AI summary")
+                                Text("Generate AI performance summary")
                             }
                         }
                         Spacer(Modifier.height(8.dp))
@@ -184,12 +194,12 @@ fun WeeklyReviewScreen(
                             enabled = !state.saveBusy,
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            Text("Save week")
+                            Text("Save weekly report")
                         }
                         if (state.aiSummary.isNotBlank()) {
                             Spacer(Modifier.height(20.dp))
                             Text(
-                                "AI summary",
+                                "AI operating diagnosis",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.SemiBold,
                             )

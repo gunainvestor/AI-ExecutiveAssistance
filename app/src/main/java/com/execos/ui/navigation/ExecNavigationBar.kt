@@ -3,12 +3,10 @@ package com.execos.ui.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.EditNote
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Today
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.EditNote
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Psychology
 import androidx.compose.material.icons.outlined.Today
 import androidx.compose.material3.Icon
@@ -30,10 +28,9 @@ private data class Tab(
 )
 
 private val tabs = listOf(
-    Tab(Routes.Home, "Home", Icons.Filled.Home, Icons.Outlined.Home),
-    Tab(Routes.Focus, "Today", Icons.Filled.Today, Icons.Outlined.Today),
-    Tab(Routes.Decisions, "Decide", Icons.Filled.Psychology, Icons.Outlined.Psychology),
-    Tab(Routes.Reflection, "Reflect", Icons.Filled.EditNote, Icons.Outlined.EditNote),
+    Tab(Routes.Focus, "Focus", Icons.Filled.Today, Icons.Outlined.Today),
+    Tab(Routes.Decisions, "Decisions", Icons.Filled.Psychology, Icons.Outlined.Psychology),
+    Tab(Routes.AiCoach, "AI Coach", Icons.Filled.EditNote, Icons.Outlined.EditNote),
     Tab(Routes.Weekly, "Review", Icons.Filled.CalendarMonth, Icons.Outlined.CalendarMonth),
 )
 

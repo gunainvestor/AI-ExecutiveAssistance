@@ -85,7 +85,7 @@ fun UsageScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Device usage", fontWeight = FontWeight.SemiBold) },
+                title = { Text("Distraction impact", fontWeight = FontWeight.SemiBold) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
             )
         },
@@ -125,7 +125,7 @@ fun UsageScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     Text(
-                        "To show WhatsApp/social app usage (daily + weekly), Android requires you to grant Usage Access.",
+                        "To calculate distraction impact during your workday, Android needs Usage Access.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -138,7 +138,7 @@ fun UsageScreen(
                         Text("Grant Usage Access")
                     }
                     Text(
-                        "After granting, come back here — we’ll automatically refresh.",
+                        "After granting, come back here and we will compute how distraction affects execution.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -277,12 +277,12 @@ private fun UsageHeroCard(
             }
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    "Time check",
+                    "Distraction signal",
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
                 Text(
-                    "${animatedMinutes.value.toInt()} min today · $minutesThisWeek min this week",
+                    "${animatedMinutes.value.toInt()} mins distractions today · $minutesThisWeek mins this week",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -299,7 +299,7 @@ private fun UsageHeroCard(
         }
 
         Text(
-            "Social + browsing time (from Usage Access). No shame — just signal.",
+            "You spent $minutesToday mins on distractions. Estimated execution score impact: ${((minutesToday / 5).coerceAtMost(20))}%.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f),
         )

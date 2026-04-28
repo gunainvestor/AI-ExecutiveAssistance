@@ -55,7 +55,7 @@ fun ReflectionScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Daily reflection", fontWeight = FontWeight.SemiBold)
+                    Text("Evaluate your day", fontWeight = FontWeight.SemiBold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
@@ -98,19 +98,19 @@ fun ReflectionScreen(
                             .padding(bottom = 24.dp),
                     ) {
                         Text(
-                            "What did you do today?",
+                            "What actually moved your day forward? What didn't?",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            "Write freely — then generate coaching-style insights.",
+                            "Be honest. The coach evaluates execution, not activity.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(Modifier.height(6.dp))
                         Text(
-                            "Insights stream in live as they are generated (journal context is included automatically).",
+                            "AI feedback streams live and includes your recent context automatically.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary,
                         )
@@ -118,8 +118,8 @@ fun ReflectionScreen(
                         ExecOutlinedTextField(
                             value = state.input,
                             onValueChange = viewModel::setInput,
-                            label = { Text("Your day") },
-                            placeholder = { Text("Outcomes, 1:1s, blockers, wins…") },
+                            label = { Text("Day evaluation") },
+                            placeholder = { Text("What outcomes happened? Where did you lose focus? What would make this a 9/10 day?") },
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 5,
                             maxLines = 14,
@@ -141,7 +141,7 @@ fun ReflectionScreen(
                                     strokeWidth = 2.dp,
                                 )
                             } else {
-                                Text("Generate insights (streaming)")
+                                Text("Evaluate my day")
                             }
                         }
                         Spacer(Modifier.height(8.dp))
@@ -150,12 +150,12 @@ fun ReflectionScreen(
                             enabled = state.input.isNotBlank() || state.aiOutput.isNotBlank(),
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            Text("Save to journal")
+                            Text("Save evaluation")
                         }
                         if (state.aiOutput.isNotBlank()) {
                             Spacer(Modifier.height(24.dp))
                             Text(
-                                "Insights",
+                                "AI performance breakdown",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.SemiBold,
                             )

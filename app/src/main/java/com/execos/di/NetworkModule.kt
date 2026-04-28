@@ -39,7 +39,10 @@ object NetworkModule {
             .writeTimeout(60, TimeUnit.SECONDS)
             .addInterceptor { chain ->
                 val key = BuildConfig.OPENAI_API_KEY
-                val request = if (key.isNotBlank()) {
+                val request = if (
+                    key.isNotBlank() &&
+                    chain.request().url.host.contains("api.openai.com")
+                ) {
                     chain.request().newBuilder()
                         .header("Authorization", "Bearer $key")
                         .build()
