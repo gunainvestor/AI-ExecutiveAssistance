@@ -4,6 +4,7 @@ object Routes {
     const val Home = "home"
     const val Focus = "focus"
     const val Decisions = "decisions"
+    const val AiCoach = "ai_coach"
     const val Reflection = "reflection"
     const val Weekly = "weekly"
     const val Energy = "energy"

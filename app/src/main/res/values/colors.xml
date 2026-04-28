@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_score_good">#34D399</color>
+    <color name="widget_score_ok">#FBBF24</color>
+    <color name="widget_score_risk">#F87171</color>
+</resources>

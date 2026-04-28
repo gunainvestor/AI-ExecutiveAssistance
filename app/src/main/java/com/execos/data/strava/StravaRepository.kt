@@ -4,6 +4,7 @@ import com.execos.BuildConfig
 import com.execos.data.local.ExecOsDatabase
 import com.execos.data.local.entity.StravaActivityEntity
 import com.execos.data.repo.AuthRepository
+import retrofit2.HttpException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -27,11 +28,21 @@ class StravaRepository @Inject constructor(
 
     suspend fun exchangeCodeAndStore(code: String) = withContext(Dispatchers.IO) {
         val uid = authRepository.currentUserId()
-        val res = api.tokenExchange(
-            clientId = BuildConfig.STRAVA_CLIENT_ID,
-            clientSecret = BuildConfig.STRAVA_CLIENT_SECRET,
-            code = code,
-        )
+        val res = try {
+            api.tokenExchange(
+                clientId = BuildConfig.STRAVA_CLIENT_ID,
+                clientSecret = BuildConfig.STRAVA_CLIENT_SECRET,
+                code = code,
+                redirectUri = BuildConfig.STRAVA_REDIRECT_URI,
+            )
+        } catch (e: HttpException) {
+            val body = e.response()?.errorBody()?.string().orEmpty()
+            if (body.isNotBlank()) {
+                throw IllegalStateException("Strava token exchange failed: $body")
+            } else {
+                throw IllegalStateException("Strava token exchange failed: HTTP ${e.code()}")
+            }
+        }
         tokenStore.put(
             uid,
             StravaTokens(

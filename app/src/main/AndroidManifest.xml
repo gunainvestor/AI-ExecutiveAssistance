@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- Special permission granted by the user in Settings ("Usage access"). -->
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
@@ -37,5 +38,18 @@
                     android:path="/strava" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".ui.widget.DailyGoalsWidgetReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/daily_goals_widget_info" />
+        </receiver>
     </application>
 </manifest>

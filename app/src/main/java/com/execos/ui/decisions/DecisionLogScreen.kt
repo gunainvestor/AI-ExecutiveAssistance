@@ -74,7 +74,7 @@ fun DecisionLogScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Decision log", fontWeight = FontWeight.SemiBold)
+                    Text("Decisions", fontWeight = FontWeight.SemiBold)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
@@ -157,7 +157,7 @@ fun DecisionLogScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        if (state.draft.id.isBlank()) "New decision" else "Edit decision",
+                        if (state.draft.id.isBlank()) "What decision is blocking execution?" else "Update this decision",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.weight(1f),
@@ -168,7 +168,7 @@ fun DecisionLogScreen(
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Fill in the context, then run AI for risks and trade-offs.",
+                    "Describe the stakes and options. AI will coach your call and next move.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -176,7 +176,7 @@ fun DecisionLogScreen(
                 ExecOutlinedTextField(
                     value = state.draft.title,
                     onValueChange = { t -> viewModel.updateDraft { d -> d.copy(title = t) } },
-                    label = { Text("Title") },
+                    label = { Text("Decision title") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                 )
@@ -184,7 +184,7 @@ fun DecisionLogScreen(
                 ExecOutlinedTextField(
                     value = state.draft.context,
                     onValueChange = { t -> viewModel.updateDraft { d -> d.copy(context = t) } },
-                    label = { Text("Context") },
+                    label = { Text("Context and stakes") },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 2,
                     maxLines = 8,
@@ -193,7 +193,7 @@ fun DecisionLogScreen(
                 ExecOutlinedTextField(
                     value = state.draft.options,
                     onValueChange = { t -> viewModel.updateDraft { d -> d.copy(options = t) } },
-                    label = { Text("Options considered") },
+                    label = { Text("Options") },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 2,
                     maxLines = 8,
@@ -202,7 +202,7 @@ fun DecisionLogScreen(
                 ExecOutlinedTextField(
                     value = state.draft.finalDecision,
                     onValueChange = { t -> viewModel.updateDraft { d -> d.copy(finalDecision = t) } },
-                    label = { Text("Final decision") },
+                    label = { Text("Chosen option") },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 2,
                     maxLines = 8,
@@ -235,12 +235,12 @@ fun DecisionLogScreen(
                     if (state.aiBusy) {
                         CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp)
                     } else {
-                        Text("Run AI · risks, trade-offs, blind spots")
+                        Text("Coach this decision")
                     }
                 }
                 if (!state.draft.aiAnalysis.isNullOrBlank()) {
                     Spacer(Modifier.height(8.dp))
-                    Text("AI analysis", style = MaterialTheme.typography.titleSmall)
+                    Text("AI recommendation", style = MaterialTheme.typography.titleSmall)
                     Spacer(Modifier.height(4.dp))
                     Text(
                         state.draft.aiAnalysis ?: "",

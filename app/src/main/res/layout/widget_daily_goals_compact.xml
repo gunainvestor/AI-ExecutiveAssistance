@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widgetRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@drawable/widget_bg_premium">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/widgetTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="ExecOS"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/widgetBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/widget_badge_bg"
+            android:paddingLeft="8dp"
+            android:paddingTop="3dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="3dp"
+            android:text="In Control"
+            android:textStyle="bold"
+            android:textSize="10sp"
+            android:textColor="#DFF7FF" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/widgetSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="Stay locked on what matters."
+        android:textSize="11sp"
+        android:textColor="#D1DBEA" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="9dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/widgetScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="72"
+            android:textStyle="bold"
+            android:textSize="28sp"
+            android:textColor="@color/widget_score_ok" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:text="/100"
+            android:textSize="12sp"
+            android:textColor="#D1DBEA" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/widgetScoreRingTrack"
+        android:layout_width="120dp"
+        android:layout_height="6dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/widget_score_track">
+
+        <LinearLayout
+            android:id="@+id/widgetScoreRingFill"
+            android:layout_width="72dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/widget_score_fill" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/widgetGoal1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="1. Define your first high-impact goal"
+        android:textSize="13sp"
+        android:textColor="@android:color/white" />
+</LinearLayout>
